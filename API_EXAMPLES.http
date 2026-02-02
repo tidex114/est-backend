@@ -1,0 +1,117 @@
+# EST Catalog API - Example Requests
+# Test the offers API endpoints
+
+### Health Check
+GET http://localhost:8000/health
+
+### Database Health Check
+GET http://localhost:8000/db/health
+
+---
+## PARTNER ENDPOINTS (requires partner role)
+
+### Create Offer (Partner)
+POST http://localhost:8000/offers
+Content-Type: application/json
+X-User-Id: 550e8400-e29b-41d4-a716-446655440000
+X-User-Role: partner
+X-Place-Id: 123e4567-e89b-12d3-a456-426614174000
+
+{
+  "title": "Delicious Breakfast Combo",
+  "description": "Fresh croissant with coffee - Save 40%!",
+  "price_amount": 299.00,
+  "price_currency": "RUB",
+  "original_price_amount": 499.00,
+  "original_price_currency": "RUB",
+  "quantity_total": 20,
+  "pickup_start": "2026-01-27T08:00:00+03:00",
+  "pickup_end": "2026-01-27T12:00:00+03:00",
+  "tags": ["breakfast", "coffee", "bakery"],
+  "allergens": ["gluten", "milk"],
+  "image_urls": ["https://example.com/breakfast.jpg"]
+}
+
+### Get My Offers (Partner Dashboard)
+GET http://localhost:8000/offers/partner/my-offers?limit=20&offset=0
+X-User-Id: 550e8400-e29b-41d4-a716-446655440000
+X-User-Role: partner
+X-Place-Id: 123e4567-e89b-12d3-a456-426614174000
+
+### Update Offer (Partner) - Activate it
+# Replace {offer_id} with actual UUID from create response
+PATCH http://localhost:8000/offers/{offer_id}
+Content-Type: application/json
+X-User-Id: 550e8400-e29b-41d4-a716-446655440000
+X-User-Role: partner
+X-Place-Id: 123e4567-e89b-12d3-a456-426614174000
+
+{
+  "status": "active",
+  "quantity_total": 25
+}
+
+### Delete Offer (Partner)
+# Replace {offer_id} with actual UUID
+DELETE http://localhost:8000/offers/{offer_id}
+X-User-Id: 550e8400-e29b-41d4-a716-446655440000
+X-User-Role: partner
+X-Place-Id: 123e4567-e89b-12d3-a456-426614174000
+
+---
+## USER ENDPOINTS (requires user role)
+
+### List Offers (User/Customer)
+GET http://localhost:8000/offers?limit=20&offset=0&active_only=true
+X-User-Id: 660e8400-e29b-41d4-a716-446655440001
+X-User-Role: user
+
+### Get Single Offer
+# Replace {offer_id} with actual UUID
+GET http://localhost:8000/offers/{offer_id}
+X-User-Id: 660e8400-e29b-41d4-a716-446655440001
+X-User-Role: user
+
+### Reserve Offer (User/Customer)
+# Replace {offer_id} with actual UUID
+POST http://localhost:8000/offers/{offer_id}/reserve
+Content-Type: application/json
+X-User-Id: 660e8400-e29b-41d4-a716-446655440001
+X-User-Role: user
+
+{
+  "quantity": 2
+}
+
+---
+## Notes:
+
+### Authentication Headers:
+- **X-User-Id**: UUID of the authenticated user
+- **X-User-Role**: "user" (customer) or "partner" (restaurant owner)
+- **X-Place-Id**: Required for partners - UUID of their restaurant/place
+
+### Role-based Access:
+1. **Partners can:**
+   - Create offers (POST /offers)
+   - Update their offers (PATCH /offers/{id})
+   - Delete their offers (DELETE /offers/{id})
+   - View their offers dashboard (GET /offers/partner/my-offers)
+
+2. **Users can:**
+   - List active offers (GET /offers)
+   - View offer details (GET /offers/{id})
+   - Reserve offers (POST /offers/{id}/reserve)
+
+### Testing Flow:
+1. Create offer as partner (status = "draft")
+2. Update to make it active (PATCH with status: "active")
+3. List offers as user (should see active offer)
+4. Reserve offer as user
+5. Check quantity decreased
+
+### Production TODO:
+- Replace header-based auth with JWT tokens
+- Add proper Authorization: Bearer <token> header
+- Implement token validation and user lookup
+- Add refresh token mechanism
