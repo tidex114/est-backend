@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from sqlalchemy import text
 
-from services.catalog.src.core.db import engine
+from services.catalog.src.core.db import get_engine
 from services.catalog.src.core.settings import settings
 from services.catalog.src.api.offers import router as offers_router
 
@@ -16,6 +16,10 @@ def health():
 
 @app.get("/db/health")
 def db_health():
-    with engine.connect() as conn:
-        conn.execute(text("select 1"))
-    return {"db": "ok"}
+    try:
+        engine = get_engine()
+        with engine.connect() as conn:
+            conn.execute(text("select 1"))
+        return {"db": "ok"}
+    except Exception as e:
+        return {"db": "error", "detail": str(e)}

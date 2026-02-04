@@ -5,7 +5,8 @@ Extends base settings with JWT and email configuration
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
+# Build path to .env file - goes up to project root
+ENV_PATH = Path(__file__).resolve().parents[3] / ".env"
 
 
 class Settings(BaseSettings):
@@ -20,7 +21,7 @@ class Settings(BaseSettings):
     env: str = "dev"
 
     # Database
-    database_url: str
+    database_url: str = "postgresql://postgres:postgres@localhost:5432/est_auth"
 
     # JWT Configuration
     jwt_secret: str = "your-secret-key-change-in-production"
@@ -29,7 +30,7 @@ class Settings(BaseSettings):
     jwt_refresh_token_expire_days: int = 7
 
     # Email Configuration
-    smtp_host: str = "localhost"
+    smtp_server: str = "localhost"
     smtp_port: int = 1025
     smtp_user: str = ""
     smtp_password: str = ""

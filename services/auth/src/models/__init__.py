@@ -1,6 +1,6 @@
 """
-Base ORM Model
+Auth Service Models
 """
-from sqlalchemy.orm import declarative_base
+from services.auth.src.models.base import Base
 
-Base = declarative_base()
+__all__ = ["Base"]

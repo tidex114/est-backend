@@ -1,9 +1,8 @@
 from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
-# __file__ = .../services/catalog/src/core/settings.py
-# parents[2] = .../services/catalog
+# Build path to .env file - goes up to project root
+ENV_PATH = Path(__file__).resolve().parents[3] / ".env"
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -14,7 +13,7 @@ class Settings(BaseSettings):
 
     app_name: str = "EST Catalog"
     env: str = "dev"
-    database_url: str
+    database_url: str = "postgresql://postgres:postgres@localhost:5432/est_catalog"
 
 
 settings = Settings()

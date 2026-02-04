@@ -10,7 +10,7 @@ from uuid import UUID
 from fastapi import Depends, HTTPException, Header
 from sqlalchemy.orm import Session
 
-from services.auth.src.core.db import SessionLocal
+from services.auth.src.core.db import get_session_local
 from services.auth.src.core.jwt_utils import verify_access_token
 
 
@@ -18,7 +18,8 @@ from services.auth.src.core.jwt_utils import verify_access_token
 
 def get_db() -> Generator[Session, None, None]:
     """Provide database session with automatic cleanup"""
-    db = SessionLocal()
+    session_local = get_session_local()
+    db = session_local()
     try:
         yield db
     finally:
